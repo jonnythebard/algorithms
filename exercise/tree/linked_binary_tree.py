@@ -23,7 +23,7 @@ class LinkedBinaryTree(BinaryTree):
 
         def element(self):
             """Return the element stored at this position"""
-            return self._node.element
+            return self._node._element
 
         def __eq__(self, other):
             """Return True if other is a Position representing the same location"""
@@ -114,6 +114,7 @@ class LinkedBinaryTree(BinaryTree):
 
         node = self._validate(p)
         if node._right is not None: raise ValueError("right child exists")
+        self._size += 1
         node._right = self._Node(e, node)
         return self._make_position(node._right)
 
@@ -166,14 +167,39 @@ class LinkedBinaryTree(BinaryTree):
             t2._root = None
             t2._size = 0
 
+    def __iter__(self):
+        """Generate an iteration of the tree's elements"""
+        for p in self.preorder():
+            yield p.element()
+
+    def preorder(self):
+        """Generate a preorder iteration of positions in the tree"""
+        if not self.is_empty():
+            for p in self._subtree_preorder(self.root()):
+                yield p
+
+    def _subtree_preorder(self, p):
+        """Generate a preorder iteration of positions in subtree rooted at p"""
+        yield p
+        for c in self.children(p):
+            for other in self._subtree_preorder(c):
+                yield other
+
 
 def build_test_tree():
+    """
+         0
+       /  \
+      1    2
+     / \  / \
+    3  4 5  6
+    """
     T = LinkedBinaryTree()
     r = T._add_root(0)
     rl = T._add_left(r, 1)
     rr = T._add_right(r, 2)
-    rll = T._add_left(rl, 1)
-    rlr = T._add_right(rl, 1)
-    rrl = T._add_left(rr, 2)
-    rrr = T._add_right(rr, 2)
+    rll = T._add_left(rl, 3)
+    rlr = T._add_right(rl, 4)
+    rrl = T._add_left(rr, 5)
+    rrr = T._add_right(rr, 6)
     return T
