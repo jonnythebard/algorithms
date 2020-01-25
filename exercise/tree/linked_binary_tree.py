@@ -1,7 +1,85 @@
 from .tree import BinaryTree
+from old_practices.linkedlist_queue import LinkedQueue
 
 
-class LinkedBinaryTree(BinaryTree):
+class PreOrderMixin:
+    def positions(self):
+        """Generate an interation of the tree's position"""
+        return self.preorder()
+
+    def preorder(self):
+        """Generate a preorder iteration of positions in the tree"""
+        if not self.is_empty():
+            for p in self._subtree_preorder(self.root()):
+                yield p
+
+    def _subtree_preorder(self, p):
+        """Generate a preorder iteration of positions in subtree rooted at p"""
+        yield p
+        for c in self.children(p):
+            for other in self._subtree_preorder(c):
+                yield other
+
+
+class PostOrderMixin:
+    def positions(self):
+        """Generate an interation of the tree's position"""
+        return self.postorder()
+
+    def postorder(self):
+        """Generate a preorder iteration of positions in the tree"""
+        if not self.is_empty():
+            for p in self._subtree_preorder(self.root()):
+                yield p
+
+    def _subtree_postorder(self, p):
+        """Generate a preorder iteration of positions in subtree rooted at p"""
+        for c in self.children(p):
+            for other in self._subtree_preorder(c):
+                yield other
+        yield p
+
+
+class InOrderMixin:
+    def positions(self):
+        """Generate an interation of the tree's position"""
+        return self.inorder()
+
+    def inorder(self):
+        """Generate an inorder iteration of position in the tree"""
+        if not self.is_empty():
+            for p in self._subtree_inorder(self.root()):
+                yield p
+
+    def _subtree_inorder(self, p):
+        """Generate an inorder iteration of position in subtree rooted at p"""
+        if self.left(p) is not None:
+            for other in self._subtree_inorder(self.left(p)):
+                yield other
+        yield p
+        if self.right(p) is not None:
+            for other in self._subtree_inorder(self.right(p)):
+                yield other
+
+
+class BFSMixin:
+    def positions(self):
+        """Generate an interation of the tree's position"""
+        return self.breadthfirst()
+
+    def breadthfirst(self):
+        """Generate a breadth-first iteration of the position of the tree"""
+        if not self.is_empty():
+            fringe = LinkedQueue()
+            fringe.enqueue(self.root())
+            while not fringe.is_empty():
+                p = fringe.dequeue()
+                yield p
+                for c in self.children(p):
+                    fringe.enqueue(c)
+
+
+class LinkedBinaryTree(InOrderMixin, BinaryTree):
     """Linked representation of a binary tree structure"""
 
     class _Node:
@@ -169,21 +247,8 @@ class LinkedBinaryTree(BinaryTree):
 
     def __iter__(self):
         """Generate an iteration of the tree's elements"""
-        for p in self.preorder():
+        for p in self.positions():
             yield p.element()
-
-    def preorder(self):
-        """Generate a preorder iteration of positions in the tree"""
-        if not self.is_empty():
-            for p in self._subtree_preorder(self.root()):
-                yield p
-
-    def _subtree_preorder(self, p):
-        """Generate a preorder iteration of positions in subtree rooted at p"""
-        yield p
-        for c in self.children(p):
-            for other in self._subtree_preorder(c):
-                yield other
 
 
 def build_test_tree():

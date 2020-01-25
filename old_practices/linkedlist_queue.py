@@ -1,4 +1,5 @@
-from Empty import Empty
+from .Empty import Empty
+
 
 class LinkedQueue:
 
@@ -23,7 +24,7 @@ class LinkedQueue:
             raise Empty('no data')
         return self._head._element
 
-    def enque(self, e):
+    def enqueue(self, e):
         newnode = self._Node(e, None)
         if self.is_empty():
             self._head = newnode
@@ -32,7 +33,7 @@ class LinkedQueue:
         self._tail = newnode
         self._size += 1
 
-    def deque(self):
+    def dequeue(self):
         if self.is_empty():
             raise Empty('no data')
         answer = self._head._element
